@@ -13,7 +13,7 @@ import java.util.List;
  * Created by Mahmoud Sadek on 2/16/2017.
  */
 public class ParseMovie {
-    String original_title, poster_image, overview, vote_average, release_date;
+    String original_title, poster_image, overview, vote_average, release_date, id;
 
     public static final String JSON_ARRAY = "results";
     public static final String KEY_ORIGINAL_TITLE = "original_title";
@@ -21,6 +21,7 @@ public class ParseMovie {
     public static final String KEY_OVERVIEW = "overview";
     public static final String KEY_VOTE_AVERAGE = "vote_average";
     public static final String KEY_RELEASE_DATE = "release_date";
+    public static final String KEY_ID = "id";
 
     private JSONArray movieArray = null;
 
@@ -43,8 +44,8 @@ public class ParseMovie {
                 overview = jo.getString(KEY_OVERVIEW);
                 vote_average = jo.getString(KEY_VOTE_AVERAGE);
                 release_date = jo.getString(KEY_RELEASE_DATE);
-
-                Movie mMovie = new Movie(original_title, poster_image, overview, vote_average, release_date);
+                id = jo.getString(KEY_ID);
+                Movie mMovie = new Movie(original_title, poster_image, overview, vote_average, release_date, id);
                 movies.add(mMovie);
             }
         } catch (JSONException e) {

@@ -4,14 +4,15 @@ package com.sadek.apps.popularmoviestage1.model;
  * Created by Mahmoud Sadek on 2/16/2017.
  */
 public class Movie {
-    String original_title, poster_image, overview, vote_average, release_date;
+    String original_title, poster_image, overview, vote_average, release_date, id;
 
-    public Movie(String original_title, String poster_image, String overview, String vote_average, String release_date) {
+    public Movie(String original_title, String poster_image, String overview, String vote_average, String release_date, String id) {
         this.original_title = original_title;
         this.poster_image = poster_image;
         this.overview = overview;
         this.vote_average = vote_average;
         this.release_date = release_date;
+        this.id = id;
     }
 
     public Movie() {
@@ -35,5 +36,9 @@ public class Movie {
 
     public String getRelease_date() {
         return release_date;
+    }
+
+    public String getId() {
+        return id;
     }
 }

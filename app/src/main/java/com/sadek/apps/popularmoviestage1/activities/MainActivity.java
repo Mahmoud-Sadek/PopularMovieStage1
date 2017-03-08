@@ -1,7 +1,11 @@
 package com.sadek.apps.popularmoviestage1.activities;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +13,10 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -19,18 +25,24 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.sadek.apps.popularmoviestage1.adapter.MoviesAdapter;
-import com.sadek.apps.popularmoviestage1.parse.ParseMovie;
 import com.sadek.apps.popularmoviestage1.R;
+import com.sadek.apps.popularmoviestage1.adapter.MoviesAdapter;
+import com.sadek.apps.popularmoviestage1.database.FavoriteAdapter;
+import com.sadek.apps.popularmoviestage1.model.Movie;
+import com.sadek.apps.popularmoviestage1.parse.ParseMovie;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
-    final String JSON_URL_popular = "https://api.themoviedb.org/3/movie/popular?api_key=9490ec35a6eea2efe32378982073f7a3";
-    final String JSON_URL_toprated = "https://api.themoviedb.org/3/movie/top_rated?api_key=9490ec35a6eea2efe32378982073f7a3";
+    final String JSON_URL_popular = "http://api.themoviedb.org/3/movie/popular?api_key=9490ec35a6eea2efe32378982073f7a3";
+    final String JSON_URL_toprated = "http://api.themoviedb.org/3/movie/top_rated?api_key=9490ec35a6eea2efe32378982073f7a3";
     final String URL_KEY = "url";
     SharedPreferences sp;
     RecyclerView mMoviesRecyclerView;
+    public static boolean largeScreen;
+    private String JSON_URL_favorite = "-";
 
+    //    72659fcbe6b80e24ac36-dd5bbdbe316"
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,18 +54,40 @@ public class MainActivity extends AppCompatActivity {
         mMoviesRecyclerView.setHasFixedSize(true);
         //Set RecyclerView type according to intent value
         mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, calculateNoOfColumns(getBaseContext())));
-
+        checkScreeen();
         // getData from json
         sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String URL = sp.getString(URL_KEY, null);
-        if (URL != null) {
-            sendRequest(URL);
-        } else {
+        if (URL == null) {
             SharedPreferences.Editor spe = sp.edit();
             spe.putString(URL_KEY, JSON_URL_popular).apply();
             spe.commit();
             sendRequest(JSON_URL_popular);
+
+        } else if (URL.equals("-")) {
+            fav();
+        } else {
+            sendRequest(URL);
         }
+
+    }
+
+    private void checkScreeen() {
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenSize = getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+        if (size.x > size.y || screenSize == Configuration.SCREENLAYOUT_SIZE_LARGE || screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            View viewGroup = (View) findViewById(R.id.fragment2);
+            viewGroup.setVisibility(View.INVISIBLE);
+            largeScreen = true;
+        } else {
+            largeScreen = false;
+        }
+        fragmentTransaction.commit();
 
     }
 
@@ -86,8 +120,22 @@ public class MainActivity extends AppCompatActivity {
             spe.commit();
             return true;
         }
-
+        if (id == R.id.action_favorite) {
+            SharedPreferences.Editor spe = sp.edit();
+            spe.putString(URL_KEY, JSON_URL_favorite).apply();
+            spe.commit();
+            fav();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void fav() {
+        Toast.makeText(getBaseContext(), "Favorite", Toast.LENGTH_LONG).show();
+        FavoriteAdapter favoriteAdapter = new FavoriteAdapter(getBaseContext());
+        ArrayList<Movie> movieData = favoriteAdapter.getAllData();
+        MoviesAdapter adapter = new MoviesAdapter(getBaseContext(), movieData);
+        mMoviesRecyclerView.setAdapter(adapter);
     }
 
     private void sendRequest(String JSON_URL) {

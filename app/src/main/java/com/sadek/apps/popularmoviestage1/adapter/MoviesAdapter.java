@@ -12,9 +12,11 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.sadek.apps.popularmoviestage1.activities.DetailActivity;
-import com.sadek.apps.popularmoviestage1.model.Movie;
 import com.sadek.apps.popularmoviestage1.R;
+import com.sadek.apps.popularmoviestage1.activities.DetailActivity;
+import com.sadek.apps.popularmoviestage1.activities.MainActivity;
+import com.sadek.apps.popularmoviestage1.fragments.DetailActivityFragment;
+import com.sadek.apps.popularmoviestage1.model.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -49,7 +51,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     public MoviesAdapter(Context mContext, List<Movie> movieList) {
         this.mContext = mContext;
         this.movieList = movieList;
-
+        DetailActivityFragment.movie = movieList.get(0);
+        if (MainActivity.largeScreen) {
+            DetailActivityFragment.initData();
+            DetailActivityFragment.view.setVisibility(View.VISIBLE);
+        }
     }
 
     View itemView;
@@ -59,7 +65,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
 
         itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_movie, parent, false);
-
         return new MyViewHolder(itemView);
     }
 
@@ -76,10 +81,16 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DetailActivity.movie = movie_item;
-                Intent n = new Intent(mContext, DetailActivity.class);
-                n.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(n);
+                if (MainActivity.largeScreen) {
+                    DetailActivityFragment.movie = movie_item;
+                    DetailActivityFragment.initData();
+                    DetailActivityFragment.view.setVisibility(View.VISIBLE);
+                }else {
+                    DetailActivityFragment.movie = movie_item;
+                    Intent n = new Intent(mContext, DetailActivity.class);
+                    n.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(n);
+                }
             }
         });
 
