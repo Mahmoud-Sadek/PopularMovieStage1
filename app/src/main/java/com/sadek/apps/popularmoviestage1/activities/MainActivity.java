@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -27,11 +28,13 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.sadek.apps.popularmoviestage1.R;
 import com.sadek.apps.popularmoviestage1.adapter.MoviesAdapter;
-import com.sadek.apps.popularmoviestage1.database.FavoriteAdapter;
+import com.sadek.apps.popularmoviestage1.database.data.FavouriteContract;
+import com.sadek.apps.popularmoviestage1.database.data.FavouriteDbHelper;
 import com.sadek.apps.popularmoviestage1.model.Movie;
 import com.sadek.apps.popularmoviestage1.parse.ParseMovie;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     final String JSON_URL_popular = "http://api.themoviedb.org/3/movie/popular?api_key=9490ec35a6eea2efe32378982073f7a3";
@@ -131,10 +134,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fav() {
-        Toast.makeText(getBaseContext(), "Favorite", Toast.LENGTH_LONG).show();
-        FavoriteAdapter favoriteAdapter = new FavoriteAdapter(getBaseContext());
-        ArrayList<Movie> movieData = favoriteAdapter.getAllData();
-        MoviesAdapter adapter = new MoviesAdapter(getBaseContext(), movieData);
+//        Toast.makeText(getBaseContext(), "Favorite", Toast.LENGTH_LONG).show();
+//        FavoriteAdapter favoriteAdapter = new FavoriteAdapter(getBaseContext());
+//        ArrayList<Movie> movieData = favoriteAdapter.getAllData();
+//        MoviesAdapter adapter = new MoviesAdapter(getBaseContext(), movieData);
+//        mMoviesRecyclerView.setAdapter(adapter);
+
+        String[] column = {FavouriteDbHelper.UID, FavouriteDbHelper.POSTER, FavouriteDbHelper.TITEL, FavouriteDbHelper.DATE, FavouriteDbHelper.VOTE, FavouriteDbHelper.OVERVIEW, FavouriteDbHelper.POSTER_ID};
+        Cursor cursor = getContentResolver().query(
+                FavouriteContract.FavouriteEntry.CONTENT_URI,   // The content URI of the words table
+                column,                        // The columns to return for each row
+                null,                   // Selection criteria
+                null,                     // Selection criteria
+                null);
+//            Cursor cursor = dbController.get_dataselect();
+
+        List<Movie> movieDataList = new ArrayList<Movie>();
+        if (cursor.moveToFirst()) {
+            do {
+                String POSTER = cursor.getString(1);
+                String TITEL = cursor.getString(2);
+                String DATE = cursor.getString(3);
+                String VOTE = cursor.getString(4);
+                String OVERVIE = cursor.getString(5);
+                String poster_id = cursor.getInt(6) + "";
+                movieDataList.add(new Movie(TITEL, POSTER, OVERVIE, VOTE, DATE, poster_id));
+            } while (cursor.moveToNext());
+        }
+        MoviesAdapter adapter = new MoviesAdapter(getBaseContext(), movieDataList);
         mMoviesRecyclerView.setAdapter(adapter);
     }
 
@@ -168,6 +195,6 @@ public class MainActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         int noOfColumns = (int) (dpWidth / 180);
-        return noOfColumns;
+        return noOfColumns >= 2 ? noOfColumns : 2;
     }
 }

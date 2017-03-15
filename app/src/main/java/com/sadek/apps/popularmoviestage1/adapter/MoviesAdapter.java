@@ -51,7 +51,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     public MoviesAdapter(Context mContext, List<Movie> movieList) {
         this.mContext = mContext;
         this.movieList = movieList;
-        DetailActivityFragment.movie = movieList.get(0);
+        if (!movieList.isEmpty()) {
+            DetailActivityFragment.movie = movieList.get(0);
+        }
         if (MainActivity.largeScreen) {
             DetailActivityFragment.initData();
             DetailActivityFragment.view.setVisibility(View.VISIBLE);

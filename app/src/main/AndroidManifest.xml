@@ -24,6 +24,12 @@
             android:name=".activities.DetailActivity"
             android:label="@string/title_activity_detail"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <provider
+            android:authorities="com.sadek.apps.popularmoviestage1"
+            android:name=".database.data.FavouriteProvider"
+            android:exported="false"
+            android:syncable="true" >
+        </provider>
     </application>
 
 </manifest>

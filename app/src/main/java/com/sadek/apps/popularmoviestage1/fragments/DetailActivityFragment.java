@@ -1,6 +1,8 @@
 package com.sadek.apps.popularmoviestage1.fragments;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -22,7 +24,8 @@ import com.android.volley.toolbox.Volley;
 import com.sadek.apps.popularmoviestage1.R;
 import com.sadek.apps.popularmoviestage1.adapter.MovieReviewsAdapter;
 import com.sadek.apps.popularmoviestage1.adapter.MovieVideosAdapter;
-import com.sadek.apps.popularmoviestage1.database.FavoriteAdapter;
+import com.sadek.apps.popularmoviestage1.database.data.FavouriteContract;
+import com.sadek.apps.popularmoviestage1.database.data.FavouriteDbHelper;
 import com.sadek.apps.popularmoviestage1.model.Movie;
 import com.sadek.apps.popularmoviestage1.parse.ParseMovieVedios;
 import com.squareup.picasso.Picasso;
@@ -92,16 +95,38 @@ public class DetailActivityFragment extends Fragment {
 
 
     public static void favBtn() {
-        FavoriteAdapter favoriteAdapter = new FavoriteAdapter(mContext);
-        if (favoriteAdapter.getData(movie.getId()) == null) {
-            long insrt = favoriteAdapter.insertData(movie.getId(), movie.getPoster_image(), movie.getOriginal_title(), movie.getRelease_date(), movie.getVote_average(), movie.getOverview());
-            if (insrt != -1) {
-                Toast.makeText(mContext, "Favorite", Toast.LENGTH_SHORT).show();
-            } else
-                Toast.makeText(mContext, "Error In Insert Data", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(mContext, "Favorite Already", Toast.LENGTH_SHORT).show();
-        }
+//        FavoriteAdapter favoriteAdapter = new FavoriteAdapter(mContext);
+//        if (favoriteAdapter.getData(movie.getId()) == null) {
+//            long insrt = favoriteAdapter.insertData(movie.getId(), movie.getPoster_image(), movie.getOriginal_title(), movie.getRelease_date(), movie.getVote_average(), movie.getOverview());
+//            if (insrt != -1) {
+//                Toast.makeText(mContext, "Favorite", Toast.LENGTH_SHORT).show();
+//            } else
+//                Toast.makeText(mContext, "Error In Insert Data", Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(mContext, "Favorite Already", Toast.LENGTH_SHORT).show();
+//        }
+
+//        contentProvider content_Provider = new contentProvider();
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(content_Provider.POSTER, movie.getPoster_image());
+//        contentValues.put(content_Provider.TITEL, movie.getOriginal_title());
+//        contentValues.put(content_Provider.DATE, movie.getRelease_date());
+//        contentValues.put(content_Provider.VOTE, movie.getVote_average());
+//        contentValues.put(content_Provider.OVERVIEW, movie.getOverview());
+//        contentValues.put(content_Provider.POSTER_ID, movie.getId());
+//        content_Provider.insert(contentProvider.myUrl, contentValues);
+
+        ContentValues values = new ContentValues();
+        values.put(FavouriteDbHelper.POSTER, movie.getPoster_image());
+        values.put(FavouriteDbHelper.TITEL, movie.getOriginal_title());
+        values.put(FavouriteDbHelper.DATE, movie.getRelease_date());
+        values.put(FavouriteDbHelper.VOTE, movie.getVote_average());
+        values.put(FavouriteDbHelper.OVERVIEW, movie.getOverview());
+        values.put(FavouriteDbHelper.POSTER_ID, movie.getId());
+
+        Uri uri = mContext.getContentResolver().insert(FavouriteContract.FavouriteEntry.CONTENT_URI, values);
+
+
     }
 
     private static void setData() {
