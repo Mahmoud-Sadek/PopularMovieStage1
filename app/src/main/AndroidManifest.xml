@@ -3,6 +3,7 @@
     package="com.sadek.apps.popularmoviestage1">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -24,12 +25,12 @@
             android:name=".activities.DetailActivity"
             android:label="@string/title_activity_detail"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
         <provider
-            android:authorities="com.sadek.apps.popularmoviestage1"
             android:name=".database.data.FavouriteProvider"
+            android:authorities="com.sadek.apps.popularmoviestage1"
             android:exported="false"
-            android:syncable="true" >
-        </provider>
+            android:syncable="true"></provider>
     </application>
 
 </manifest>

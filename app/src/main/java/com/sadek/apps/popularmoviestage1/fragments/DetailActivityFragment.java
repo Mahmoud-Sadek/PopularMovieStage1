@@ -2,8 +2,10 @@ package com.sadek.apps.popularmoviestage1.fragments;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,10 +24,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.sadek.apps.popularmoviestage1.R;
+import com.sadek.apps.popularmoviestage1.activities.MainActivity;
 import com.sadek.apps.popularmoviestage1.adapter.MovieReviewsAdapter;
 import com.sadek.apps.popularmoviestage1.adapter.MovieVideosAdapter;
 import com.sadek.apps.popularmoviestage1.database.data.FavouriteContract;
 import com.sadek.apps.popularmoviestage1.database.data.FavouriteDbHelper;
+import com.sadek.apps.popularmoviestage1.model.CheckNetwork;
 import com.sadek.apps.popularmoviestage1.model.Movie;
 import com.sadek.apps.popularmoviestage1.parse.ParseMovieVedios;
 import com.squareup.picasso.Picasso;
@@ -75,12 +79,16 @@ public class DetailActivityFragment extends Fragment {
         mReviewsRecyclerView.setHasFixedSize(true);
         //Set RecyclerView type according to intent value
         mReviewsRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 1));
-        if (movie.getOriginal_title() == null) {
-            view.setVisibility(View.INVISIBLE);
-            return view;
-        } else {
-            view.setVisibility(View.VISIBLE);
-            initData();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String URL = sp.getString(MainActivity.URL_KEY, null);
+        if(CheckNetwork.isConnected(getContext()) || URL.equals("-") ) {
+            if (movie.getOriginal_title() == null) {
+                view.setVisibility(View.INVISIBLE);
+                return view;
+            } else {
+                view.setVisibility(View.VISIBLE);
+                initData();
+            }
         }
         return view;
     }

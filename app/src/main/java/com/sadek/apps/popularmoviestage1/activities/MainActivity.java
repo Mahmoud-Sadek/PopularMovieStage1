@@ -39,7 +39,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     final String JSON_URL_popular = "http://api.themoviedb.org/3/movie/popular?api_key=9490ec35a6eea2efe32378982073f7a3";
     final String JSON_URL_toprated = "http://api.themoviedb.org/3/movie/top_rated?api_key=9490ec35a6eea2efe32378982073f7a3";
-    final String URL_KEY = "url";
+    public static final String URL_KEY = "url";
     SharedPreferences sp;
     RecyclerView mMoviesRecyclerView;
     public static boolean largeScreen;
